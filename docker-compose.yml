@@ -1,0 +1,22 @@
+version: '3.8'  # Ensure you're using a compatible version
+
+services:
+  prom-server:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus-config.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana-oss
+    container_name: grafana
+    ports:
+      - 3000:3000
+    depends_on:
+      - prom-server  
+    volumes:
+      - grafana-data:/var/lib/grafana  
+
+volumes:
+  grafana-data:  
