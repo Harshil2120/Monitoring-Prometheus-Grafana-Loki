@@ -1,4 +1,4 @@
-version: '3.8'  # Ensure you're using a compatible version
+version: '3.8'
 
 services:
   prom-server:
@@ -18,5 +18,11 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana  
 
+  loki:
+    image: grafana/loki
+    container_name: loki
+    ports:
+      - 3100:3100
+
 volumes:
-  grafana-data:  
+  grafana-data:

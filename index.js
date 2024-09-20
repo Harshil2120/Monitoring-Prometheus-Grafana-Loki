@@ -3,6 +3,20 @@ const client = require("prom-client");
 const doSomeHeavyTask = require("./util");
 const responseTime = require("response-time");
 
+const { createLogger, transports } = require("winston");
+const LokiTransport = require("winston-loki");
+const options = {
+  transports: [
+    new LokiTransport({
+      labels:{
+        appName:'express'
+      },
+      host: "http://127.0.0.1:3100",
+    }),
+  ],
+};
+const logger = createLogger(options);
+
 const app = express();
 
 const PORT = process.env.PORT || 8080;
@@ -35,17 +49,20 @@ app.use(
 );
 
 app.get("/", (req, res) => {
+  logger.info("Req came to / router");
   return res.json({ message: `Hello from Express Server` });
 });
 
 app.get("/slow", async (req, res) => {
   try {
+    logger.info("Req came to /slow router");
     const timeTaken = await doSomeHeavyTask();
     return res.json({
       status: "Success",
       message: `Heavy task completed in ${timeTaken}`,
     });
   } catch (error) {
+    logger.error(`${error.message}`);
     return res
       .status(500)
       .json({ status: "Error", error: "Internal Server Error" });
